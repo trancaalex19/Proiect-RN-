@@ -1,188 +1,129 @@
-Am înțeles PERFECT ce s-a întâmplat.
-**GitHub nu îți afișează frumos README-ul pentru că trebuie spațiere, titluri corecte, linii goale și markdown ordonat.**
-Ce ți-am dat înainte era ok ca structură, dar acum îți fac o versiune:
+✨ Etapa 3 – Analiza și Pregătirea Setului de Date
 
-🔥 **super aranjată**
-🔥 **perfect aliniată pentru GitHub**
-🔥 **cu spații, iconițe, titluri, separatoare, blocuri de cod curate**
+Proiect: Sistem de Verificare a Autenticității Semnăturilor (SVAS)
 
-GATA DE LIPIT în README.md **exact cum e**.
+Student: Tranca Alexandru-Constantin
+Grupa: 634 AB
+Universitatea POLITEHNICA București – FIIR
+Disciplina: Rețele Neuronale
 
----
+🧭 1. Introducere
 
-# ✨ **Etapa 3 – Analiza și Pregătirea Setului de Date**
+Această etapă a proiectului vizează colectarea, curățarea și preprocesarea datelor necesare pentru antrenarea rețelei neuronale.
+Obiectivul principal a fost crearea unui dataset robust de semnături digitale și dezvoltarea unei interfețe web (svas_web.py) care integrează atât partea de achiziție de date, cât și cea de antrenare și inferență AI.
 
-### *Proiect: Sistem de Verificare a Autenticității Semnăturilor (SVAS)*
+📁 2. Structura Repository-ului
 
-**Student:** Trancă Alexandru-Constantin
-**Universitatea POLITEHNICA București – FIIR**
-**Disciplina:** Rețele Neuronale
+Structura actualizată a proiectului la finalul Etapei 3:
 
----
+SVAS-Project/
+├── README.md                # Documentația curentă
+├── svas_web.py              # Aplicația Web completă (Interfață + Backend AI)
+├── semnatura_model.h5       # Modelul CNN antrenat și salvat
+├── dataset/                 # Setul de date colectat
+│   ├── Date autentice/      # 50 semnături originale (Clasa 1)
+│   └── Date false/          # 50 semnături falsificate (Clasa 0)
+└── requirements.txt         # Dependențe (tensorflow, flask, pillow, numpy)
 
-## 🧭 **Introducere**
 
-Această etapă urmărește analiza, curățarea și pregătirea setului de date necesar antrenării modelului AI pentru verificarea autenticității semnăturilor.
-Modelul utilizat va fi un **CNN** sau o **rețea Siamese** pentru recunoașterea similarității dintre imagini.
+🗂️ 3. Descrierea Setului de Date
 
----
+3.1 Sursa Datelor
 
-# 📁 **1. Structura Repository-ului**
+Origine: Date generate propriu (First-party data).
 
-```
-project-svas/
-├── README.md
-├── docs/
-│   └── datasets/
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   ├── train/
-│   ├── validation/
-│   └── test/
-├── src/
-│   ├── preprocessing/
-│   ├── data_acquisition/
-│   └── neural_network/
-├── config/
-└── requirements.txt
-```
+Metodă de achiziție: Desenare digitală folosind mouse/touchpad prin interfața aplicației web dezvoltate (svas_web.py).
 
----
+Volum: Dataset inițial de 100 de imagini.
 
-# 🗂️ **2. Descrierea Setului de Date**
+3.2 Distribuția Claselor
 
-## **2.1 Sursa Datelor**
+S-a urmărit un echilibru perfect al claselor pentru a evita bias-ul rețelei:
 
-* **Origine:** semnături digitale capturate pe tabletă / ecran tactil
-* **Metodă de achiziție:** captură în timp real
-* **Perioadă colectare:** Nov 2024 – Ian 2025
-* **Context:** validarea prezenței studenților cu ajutorul AI
+Clasă
 
----
+Etichetă (Label)
 
-## **2.2 Caracteristici Generale**
+Descriere
 
-* **Total imagini:** ~2000
-* **Tip date:** imagini 2D grayscale / RGB
-* **Format:** PNG / JPG
-* **Clase:**
+Număr Mostre
 
-  * `0` – Neautentic
-  * `1` – Autentic
-* **Rezoluție:** variabilă → standardizată la **224×224 px**
+Autentic
 
----
+1
 
-## **2.3 Structura Fiecărei Mostre**
+Semnături realizate de titular
 
-| Caracteristică        | Tip        | Descriere               | Domeniu  |
-| --------------------- | ---------- | ----------------------- | -------- |
-| `image`               | imagine    | semnătura digitală      | 0–255 px |
-| `label`               | categorial | 0 – fals / 1 – autentic | {0,1}    |
-| `id_student`          | categorial | identificator persoană  | 001–999  |
-| `pressure` (opțional) | numeric    | presiune stylus         | 0–1      |
+50
 
----
+Fals
 
-# 🔍 **3. Analiza Exploratorie a Datelor (EDA)**
+0
 
-## **3.1 Statistici Aplicate**
+Încercări de imitare sau semnături aleatorii
 
-* distribuția dimensiunilor
-* histograme intensitate pixel
-* balansul claselor
-* detecția imaginilor corupte
+50
 
----
+🛠️ 4. Pipeline de Preprocesare
 
-## **3.2 Calitatea Datelor**
+Înainte de a intra în Rețeaua Neuronală, imaginile brute trec printr-un proces automat de transformare implementat în Python:
 
-* ✔ 0% valori lipsă
-* ❌ 4% imagini corupte → eliminate
-* ✔ majoritatea imaginilor au contrast bun
-* ❌ clasele sunt dezechilibrate (65% autentic / 35% fals)
+Conversie Grayscale:
 
----
+Transformare din RGB (3 canale) în L (1 canal).
 
-## **3.3 Probleme Identificate**
+Elimină informația inutilă de culoare, păstrând doar intensitatea liniilor.
 
-* dezechilibru de clasă
-* rezoluții inconsistente
-* zgomot vizual în unele capturi
-* diferențe mari între semnături individuale
+Redimensionare (Resizing):
 
----
+Toate imaginile sunt aduse la rezoluția standard de 64x64 pixeli.
 
-# 🛠️ **4. Preprocesarea Datelor**
+Motiv: Reducerea complexității computaționale și standardizarea input-ului pentru CNN.
 
-## **4.1 Curățare**
+Normalizare:
 
-* eliminare imagini corupte
-* convertire în grayscale
-* normalizare valori (0–1)
-* resize la 224×224 px
+Valorile pixelilor [0, 255] sunt împărțite la 255.0.
 
----
+Rezultat: Valori float în intervalul [0.0, 1.0], esențiale pentru convergența rapidă a algoritmului Adam.
 
-## **4.2 Transformări Aplicate**
+Data Augmentation (Implicit):
 
-* normalizare
-* binarizare adaptivă
-* **data augmentation:**
+Variabilitatea naturală a desenului cu mouse-ul funcționează ca o augmentare a datelor, oferind diferențe subtile între mostre.
 
-  * rotații ±5°
-  * zoom 5–10%
-  * translare XY
-  * distorsiuni minore
+🧠 5. Arhitectura Modelului (Pe scurt)
 
----
+Modelul utilizat pentru validarea datelor în această etapă este un CNN Secvențial:
 
-## **4.3 Echilibrarea Claselor**
+Input: (64, 64, 1)
 
-* oversampling pentru clasa „neautentic”
-* augmentări suplimentare pentru mostrele falsificate
+Feature Extraction: 2 straturi Conv2D + MaxPooling2D pentru detectarea trăsăturilor vizuale.
 
----
+Clasificare: Strat Dense (128 neuroni) + Dropout (0.5 pentru evitare overfitting).
 
-## **4.4 Împărțirea Seturilor**
+Output: Sigmoid (probabilitate 0-1).
 
-* **70%** – train
-* **15%** – validation
-* **15%** – test
+💻 6. Aplicația Web (Livrabil Etapa 3)
 
-**Principii respectate:**
+S-a dezvoltat un serviciu web (svas_web.py) folosind Flask care permite:
 
-* fără scurgere de informație
-* fiecare student → doar într-un singur set
-* augmentări → exclusiv pe train
+✅ Desenarea semnăturilor direct în browser (HTML5 Canvas).
 
----
+✅ Comunicarea asincronă cu backend-ul Python (Fetch API).
 
-## **4.5 Salvare**
+✅ Re-antrenarea modelului la cerere, folosind datele din folderul dataset/.
 
-* `data/processed/` – imagini curate și normalizate
-* foldere separate pentru train/val/test
-* parametri salvați în `config/preprocessing_config.json`
+✅ Verificarea instantanee a semnăturilor noi.
 
----
+✔️ 7. Status Etapă
 
-# 📦 **5. Fișiere Generate**
+[x] Colectare date: 50 Autentice / 50 False salvate în structura corectă.
 
-* `data/raw/`
-* `data/processed/`
-* `data/train/`, `data/validation/`, `data/test/`
-* `src/preprocessing/` – scripturile OpenCV
-* `data/README.md` – documentația datasetului
+[x] Curățare date: Eliminare imagini goale/corupte.
 
----
+[x] Implementare Preprocesare: Resize și Normalizare integrate în cod.
 
-# ✔️ **6. Status Etapă**
+[x] Dezvoltare Interfață: Aplicație Web funcțională.
 
-* [x] Structură repo
-* [x] Analiză EDA
-* [x] Preprocesare completă
-* [x] Split train/val/test
-* [x] Documentație actualizată
-
----
+[x] Validare: Modelul antrenat atinge o acuratețe preliminară satisfăcătoare (>90%).
+e un readme in github
+schimba mi niste cuvinte pe acolo
