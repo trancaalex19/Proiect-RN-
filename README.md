@@ -44,83 +44,21 @@ Volum: Dataset inițial compus din 100 de imagini.
 
 S-a menținut un echilibru perfect al claselor pentru a preveni bias-ul rețelei neuronale în procesul de învățare:
 
-Clasă
+| Clasă     | Etichetă (Label) | Descriere                                        | Număr Mostre |
+|----------|:----------------:|--------------------------------------------------|:------------:|
+| Autentic |        1         | Semnături realizate de titularul contului        |      50      |
+| Fals     |        0         | Încercări de imitare sau semnături aleatorii     |      50      |
 
-Etichetă (Label)
 
-Descriere
+### 3.3 Descrierea fiecărei caracteristici
 
-Număr Mostre
+| Caracteristică     | Tip       | Unitate | Descriere                                      | Domeniu valori     |
+|-------------------|-----------|---------|------------------------------------------------|--------------------|
+| Imagine (Input)   | Matrice   | Pixeli  | Reprezentarea vizuală a semnăturii (64x64)     | 0–255 (intensitate)|
+| Canale Culoare    | Numeric   |   -     | Număr de canale de culoare (Grayscale)         | 1                  |
+| Valoare Pixel     | Numeric   |   -     | Valoare normalizată a luminozității            | 0.0 – 1.0 (float)  |
+| Etichetă (Target) | Categorial|   -     | Clasa de apartenență (Autentic/Fals)           | {0, 1}             |
 
-Autentic
-
-1
-
-Semnături realizate de titularul contului
-
-50
-
-Fals
-
-0
-
-Încercări de imitare sau semnături aleatorii
-
-50
-
-3.3 Descrierea fiecărei caracteristici
-
-Fiecare punct de date reprezintă o imagine procesată, definită prin următorii parametri:
-
-Caracteristică
-
-Tip
-
-Unitate
-
-Descriere
-
-Domeniu valori
-
-Imagine (Input)
-
-Matrice
-
-Pixeli
-
-Reprezentarea vizuală a semnăturii (64x64)
-
-0–255 (intensitate)
-
-Canale Culoare
-
-Numeric
-
--
-
-Numărul de canale de culoare (Grayscale)
-
-1
-
-Valoare Pixel
-
-Numeric
-
--
-
-Valoarea normalizată a luminozității
-
-0.0 – 1.0 (float)
-
-Etichetă (Target)
-
-Categorial
-
--
-
-Clasa de apartenență (Autentic/Fals)
-
-{0, 1}
 
 3.4 Probleme Identificate
 
