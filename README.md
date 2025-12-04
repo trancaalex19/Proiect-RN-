@@ -1,132 +1,208 @@
-📘 README – Etapa 3: Analiza și Pregătirea Setului de Date pentru Rețele Neuronale
-
-Proiect: Sistem de Verificare a Autenticității Semnăturilor (SVAS)
-
-Student: Tranca Alexandru-Constantin
-
-Grupa: 634 AB
-
-Instituție: Universitatea POLITEHNICA București – FIIR
+📘 README – Etapa 4
 
 Disciplina: Rețele Neuronale
 
-🧭 1. Introducere
+Instituție: POLITEHNICA București – FIIR
 
-Această etapă a proiectului vizează colectarea, curățarea și preprocesarea datelor necesare pentru antrenarea rețelei neuronale.
-Obiectivul principal a fost constituirea unui dataset robust de semnături digitale și dezvoltarea unei interfețe web (svas_web.py) care integrează funcționalitățile de achiziție de date, antrenare a modelului și inferență AI.
+Student: Tranca Alexandru-Constantin
 
-📁 2. Structura Repository-ului
+Data: 04.12.2025
 
-Arhitectura proiectului la finalul Etapei 3:
+Introducere
+
+Acest document descrie activitățile realizate în Etapa 3, în care se analizează și se preprocesează setul de date necesar proiectului „Sistem de Verificare a Autenticității Semnăturilor (SVAS)”. Scopul etapei este pregătirea corectă a datelor pentru instruirea modelului RN, respectând bunele practici privind calitatea, consistența și reproductibilitatea datelor.
+
+1. Structura Repository-ului Github (versiunea Etapei 3)
 
 SVAS-Project/
-├── README.md                # Documentația tehnică a proiectului
-├── svas_web.py              # Aplicația Web (Interfață Grafică + Backend AI)
-├── semnatura_model.h5       # Modelul CNN antrenat și serializat
-├── dataset/                 # Setul de date colectat
-│   ├── Date autentice/      # 50 imagini cu semnături originale (Clasa 1)
-│   └── Date false/          # 50 imagini cu semnături falsificate (Clasa 0)
-└── requirements.txt         # Dependențe: tensorflow, flask, pillow, numpy
+├── README.md                # Documentația tehnică
+├── docs/
+│   └── datasets/            # Grafice și rapoarte distribuție
+├── data/
+│   ├── raw/                 # Date brute (imagini originale salvate din web app)
+│   ├── processed/           # Date curățate (transformate intern în memorie)
+│   ├── train/               # Set de instruire (gestionat automat)
+│   ├── validation/          # Set de validare (split 20%)
+│   └── test/                # Date de testare live
+├── dataset/                 # Dataset-ul fizic
+│   ├── Date autentice/      # 50 imagini originale (Clasa 1)
+│   └── Date false/          # 50 imagini falsificate (Clasa 0)
+├── src/
+│   ├── preprocessing/       # Pipeline de redimensionare/normalizare
+│   ├── data_acquisition/    # Modulul svas_web.py
+│   └── neural_network/      # Arhitectura CNN
+├── config/                  # Configurații (dimensiune 64x64)
+└── requirements.txt         # tensorflow, flask, pillow, numpy
 
 
+2. Descrierea Setului de Date
 
-🗂️ 3. Descrierea Setului de Date
+2.1 Sursa datelor
 
-3.1 Sursa Datelor
+Origine: Date generate propriu (First-party data) prin aplicația svas_web.py.
 
-Origine: Date generate propriu (First-party data).
+Modul de achiziție: ☑ Senzori reali (Mouse / Touchpad) / ☐ Simulare / ☐ Fișier extern / ☐ Generare programatică.
 
-Metodă de achiziție: Desenare digitală utilizând mouse-ul sau touchpad-ul, prin intermediul interfeței aplicației web dezvoltate (svas_web.py).
+Perioada / condițiile colectării: Noiembrie-Decembrie 2025. Colectare manuală prin desenare pe canvas digital HTML5.
 
-Volum: Dataset inițial compus din 100 de imagini.
+2.2 Caracteristicile dataset-ului
 
-3.2 Distribuția Claselor
+Număr total de observații: 100 imagini.
 
-S-a menținut un echilibru perfect al claselor pentru a preveni bias-ul rețelei neuronale în procesul de învățare:
+Număr de caracteristici (features): 4096 (pixeli per imagine 64x64).
 
-| Clasă     | Etichetă (Label) | Descriere                                        | Număr Mostre |
-|----------|:----------------:|--------------------------------------------------|:------------:|
-| Autentic |        1         | Semnături realizate de titularul contului        |      50      |
-| Fals     |        0         | Încercări de imitare sau semnături aleatorii     |      50      |
+Tipuri de date: ☐ Numerice / ☐ Categoriale / ☐ Temporale / ☑ Imagini.
+
+Format fișiere: PNG (Single Channel - Grayscale).
+
+2.3 Descrierea fiecărei caracteristici
+
+Caracteristică
+
+Tip
+
+Unitate
+
+Descriere
+
+Domeniu valori
+
+Imagine (X)
+
+matrice
+
+pixeli
+
+Imaginea semnăturii redimensionată
+
+64 x 64 px
+
+Canal Culoare
+
+numeric
+
+-
+
+Intensitate (Grayscale)
+
+1
+
+Intensitate Pixel
+
+numeric
+
+-
+
+Valoarea luminozității
+
+0 (Negru) – 255 (Alb)
+
+Etichetă (Y)
+
+categorial
+
+-
+
+Clasa semnăturii
+
+{0: Fals, 1: Autentic}
+
+3. Analiza Exploratorie a Datelor (EDA) – Sintetic
+
+3.1 Statistici descriptive aplicate
+
+Distribuția Claselor: Dataset-ul este perfect echilibrat:
+
+50 Semnături Autentice.
+
+50 Semnături False.
+
+Analiza Dimensiunilor: Toate imaginile sunt standardizate la 64x64 pixeli.
+
+3.2 Analiza calității datelor
+
+Detectarea valorilor lipsă: Nu există pixeli lipsă. Imaginile corupte (0 bytes) sunt ignorate automat.
+
+Consistență: Formatul PNG lossless asigură calitatea liniilor desenate.
+
+3.3 Probleme identificate
+
+Variabilitate: Semnăturile cu mouse-ul prezintă un "tremur" specific (zgomot de cuantizare) față de cele pe hârtie.
+
+Volum: Setul de 100 de date este mic, dar suficient pentru demonstrarea conceptului (Proof of Concept).
+
+4. Preprocesarea Datelor
+
+4.1 Curățarea datelor
+
+Eliminare duplicatelor: Verificare manuală a folderelor.
+
+Tratarea outlierilor: Eliminarea imaginilor complet albe (salvate eronat).
+
+4.2 Transformarea caracteristicilor
+
+Procesul este automatizat în codul Python:
+
+Conversie Grayscale: Transformare RGB -> L (1 canal).
+
+Redimensionare: Resize la 64x64 pixeli.
+
+Normalizare: Împărțirea valorilor pixelilor la 255.0 => interval [0.0, 1.0].
+
+4.3 Structurarea seturilor de date
+
+Împărțire realizată:
+
+80% – Train: Pentru învățarea ponderilor.
+
+20% – Validation: Pentru monitorizarea performanței.
+
+Principii respectate:
+
+Shuffle: Amestecare aleatorie înainte de antrenare.
+
+Stratificare: Asigurarea prezenței ambelor clase în validare.
+
+4.4 Salvarea rezultatelor preprocesării
+
+Datele nu sunt salvate intermediar pe disc, ci procesate "on-the-fly" în memoria RAM.
+
+Modelul Final: Salvat ca semnatura_model.h5.
+
+5. Diagrama Fluxului de Date
+
+Mai jos este prezentat fluxul complet al datelor prin sistemul SVAS:
+
+graph TD
+    A[Utilizator] -->|Desenează Semnătura| B(Interfață Web - HTML Canvas)
+    B -->|Apasă 'Verifică'| C{JavaScript}
+    C -->|Codificare Base64| D[HTTP POST Request]
+    D -->|Trimite datele| E[Server Python Flask]
+    
+    subgraph "Backend AI (Pre-procesare & Inferență)"
+    E -->|Decodare Imagine| F[Imagine Brută]
+    F -->|Resize 64x64 & Grayscale| G[Matrice 64x64x1]
+    G -->|Normalizare /255.0| H[Tensor Input (0.0 - 1.0)]
+    H -->|CNN Model| I[Rețea Neuronală]
+    I -->|Predicție| J[Scor Sigmoid (0.0 - 1.0)]
+    end
+    
+    J -->|Decizie (Prag > 0.8)| K[Verdict: AUTENTIC / FALS]
+    K -->|Răspuns JSON| C
+    C -->|Afișare Colorată| A
 
 
-### 3.3 Descrierea fiecărei caracteristici
+6. Fișiere Generate în Această Etapă
 
-| Caracteristică     | Tip       | Unitate | Descriere                                      | Domeniu valori     |
-|-------------------|-----------|---------|------------------------------------------------|--------------------|
-| Imagine (Input)   | Matrice   | Pixeli  | Reprezentarea vizuală a semnăturii (64x64)     | 0–255 (intensitate)|
-| Canale Culoare    | Numeric   |   -     | Număr de canale de culoare (Grayscale)         | 1                  |
-| Valoare Pixel     | Numeric   |   -     | Valoare normalizată a luminozității            | 0.0 – 1.0 (float)  |
-| Etichetă (Target) | Categorial|   -     | Clasa de apartenență (Autentic/Fals)           | {0, 1}             |
+svas_web.py: Aplicația completă.
 
+dataset/: Imaginile colectate.
 
-3.4 Probleme Identificate
+semnatura_model.h5: Modelul antrenat.
 
-Variabilitate de Captură: Semnăturile realizate cu mouse-ul prezintă un zgomot specific ("tremur") comparativ cu cele olografe. Modelul a fost configurat să generalizeze peste aceste imperfecțiuni.
+README.md: Documentația.
 
-Dimensiune Dataset: Volumul de 100 de imagini este minimal pentru Deep Learning, însă suficient pentru validarea conceptului (Proof of Concept) în această etapă.
-
-🛠️ 4. Pipeline de Preprocesare
-
-Înainte de a fi introduse în Rețeaua Neuronală, imaginile brute parcurg un flux automat de transformare implementat în Python:
-
-Conversie Grayscale:
-
-Transformarea imaginii din spectrul RGB (3 canale) în L (1 canal).
-
-Scop: Eliminarea redundanței cromatice și păstrarea doar a informației structurale (intensitatea liniilor).
-
-Redimensionare (Resizing):
-
-Standardizarea tuturor imaginilor la rezoluția de 64x64 pixeli.
-
-Scop: Reducerea complexității computaționale și uniformizarea input-ului pentru CNN.
-
-Normalizare:
-
-Împărțirea valorilor pixelilor [0, 255] la 255.0.
-
-Rezultat: Valori float în intervalul [0.0, 1.0], esențiale pentru convergența rapidă a algoritmului de optimizare (Adam).
-
-Data Augmentation (Implicit):
-
-Variabilitatea naturală indusă de desenarea manuală cu mouse-ul funcționează ca o augmentare a datelor, oferind diferențe subtile între mostrele de antrenament.
-
-🧠 5. Arhitectura Modelului (Rezumat)
-
-Modelul utilizat pentru validarea datelor în această etapă este un CNN Secvențial (Convolutional Neural Network):
-
-Input Layer: (64, 64, 1)
-
-Feature Extraction: 2 straturi de tip Conv2D urmate de MaxPooling2D pentru detectarea trăsăturilor vizuale locale.
-
-Classification Head: Strat Dense (128 neuroni) + Dropout (0.5 pentru prevenirea overfitting-ului).
-
-Output Layer: Funcție de activare Sigmoid (probabilitate 0-1).
-
-💻 6. Aplicația Web (Livrabil Etapa 3)
-
-S-a dezvoltat un serviciu web (svas_web.py) utilizând framework-ul Flask, care oferă următoarele funcționalități:
-
-✅ Interfață de Captură: Desenarea semnăturilor direct în browser folosind HTML5 Canvas.
-
-✅ Comunicare Asincronă: Transmiterea datelor către backend-ul Python prin Fetch API.
-
-✅ Modul de Antrenare: Posibilitatea de a re-antrena modelul la cerere, utilizând datele stocate în folderul dataset/.
-
-✅ Inferență în Timp Real: Verificarea instantanee a semnăturilor noi și afișarea verdictului.
-
-📦 7. Fișiere Generate în Această Etapă
-
-svas_web.py: Codul sursă complet al aplicației (Server Web + Logică AI).
-
-dataset/: Directorul conținând cele 100 de imagini colectate și clasificate.
-
-semnatura_model.h5: Fișierul binar al modelului antrenat, gata de utilizare.
-
-README.md: Documentația tehnică actualizată a proiectului.
-
-✔️ 8. Status Etapă
+7. Stare Etapă
 
 [x] Structură repository configurată.
 
@@ -139,3 +215,4 @@ README.md: Documentația tehnică actualizată a proiectului.
 [x] Aplicație Web funcțională și model antrenat.
 
 [x] Documentație actualizată în README.
+fa mi l sa arate mai frumos
