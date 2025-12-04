@@ -55,57 +55,15 @@ Tipuri de date: ☐ Numerice / ☐ Categoriale / ☐ Temporale / ☑ Imagini.
 
 Format fișiere: PNG (Single Channel - Grayscale).
 
-2.3 Descrierea fiecărei caracteristici
+### 2.3 Descrierea fiecărei caracteristici
 
-Caracteristică
+| Caracteristică   | Tip       | Unitate | Descriere                     | Domeniu valori          |
+|-----------------|-----------|---------|-------------------------------|------------------------|
+| Imagine (X)      | matrice   | pixeli  | Imaginea semnăturii redimensionată | 64 x 64 px             |
+| Canal Culoare    | numeric   | -       | Intensitate (Grayscale)       | 1                      |
+| Intensitate Pixel| numeric   | -       | Valoarea luminozității        | 0 (Negru) – 255 (Alb) |
+| Etichetă (Y)     | categorial| -       | Clasa semnăturii             | {0: Fals, 1: Autentic} |
 
-Tip
-
-Unitate
-
-Descriere
-
-Domeniu valori
-
-Imagine (X)
-
-matrice
-
-pixeli
-
-Imaginea semnăturii redimensionată
-
-64 x 64 px
-
-Canal Culoare
-
-numeric
-
--
-
-Intensitate (Grayscale)
-
-1
-
-Intensitate Pixel
-
-numeric
-
--
-
-Valoarea luminozității
-
-0 (Negru) – 255 (Alb)
-
-Etichetă (Y)
-
-categorial
-
--
-
-Clasa semnăturii
-
-{0: Fals, 1: Autentic}
 
 3. Analiza Exploratorie a Datelor (EDA) – Sintetic
 
