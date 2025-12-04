@@ -128,23 +128,14 @@ README.md: Documentația tehnică actualizată a proiectului.
 
 ✔️ 8. Status Etapă
 
-$$x$$
+[x] Structură repository configurată.
 
- Colectare date: 50 mostre Autentice / 50 mostre False salvate și structurate corect.
+[x] Dataset analizat și echilibrat (50/50).
 
-$$x$$
+[x] Date preprocesate (Pipeline automat implementat).
 
- Curățare date: Eliminarea imaginilor goale sau corupte.
+[x] Seturi train/validation utilizate în antrenare.
 
-$$x$$
+[x] Aplicație Web funcțională și model antrenat.
 
- Implementare Preprocesare: Integrarea funcțiilor de Resize și Normalizare în cod.
-
-$$x$$
-
- Dezvoltare Interfață: Aplicație Web funcțională și testată.
-
-$$x$$
-
- Validare: Modelul antrenat a atins o acuratețe preliminară satisfăcătoare (>90%).
-Nu imi schimba nimic din el doar fa mi l sa arate bine ca sa il pun intru un fisier readme de pe github
+[x] Documentație actualizată în README.
