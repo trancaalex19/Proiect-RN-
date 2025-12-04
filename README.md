@@ -209,3 +209,4 @@ $$x$$
 $$x$$
 
  Validare: Modelul antrenat a atins o acuratețe preliminară satisfăcătoare (>90%).
+Nu imi schimba nimic din el doar fa mi l sa arate bine ca sa il pun intru un fisier readme de pe github
