@@ -1,157 +1,145 @@
-Mai jos îți dau **tot blocul complet refăcut**, cu toate modificările de formatare aplicate, astfel încât să se afișeze corect în GitHub (tabele, structură repo, secțiuni, tot).
-Este gata de copiat în **README_Etapa5.md** fără alte ajustări.
+
+# **ETAPA 5 – INTEGRAREA COMPONENTELOR ȘI REALIZAREA APLICAȚIEI FINALE**
+
+## **1. Obiectivul Etapei 5**
+
+Scopul acestei etape este integrarea tuturor modulelor dezvoltate anterior (preprocesare, clasificare, antrenare model) într-o aplicație funcțională ce permite:
+
+* încărcarea unei imagini cu o semnătură,
+* preprocesarea automată a imaginii,
+* inferența utilizând modelul antrenat,
+* afișarea rezultatului direct în browser.
+
+Această etapă finalizează fluxul complet al proiectului.
 
 ---
 
-# **ETAPA 5 – Refacerea completă a fișierului (versiune finală, cu formatare corectă)**
+## **2. Arhitectura Sistemului Integrat**
 
-## 1. Descrierea Caracteristicilor
+În această etapă, aplicația finală este structurată în **3 module funcționale**, care rulează împreună în `svas_web.py`:
 
-### **Caracteristică: Imagine (X)**
+### **2.1 Modulul 1 – Preprocesare Imagine**
 
-| Proprietate        | Detalii                            |
-| ------------------ | ---------------------------------- |
-| **Tip**            | Matrice                            |
-| **Unitate**        | Pixeli                             |
-| **Descriere**      | Imaginea semnăturii redimensionată |
-| **Domeniu valori** | 64 x 64 px                         |
+Include:
 
-### **Canal Culoare**
+* conversie la grayscale,
+* redimensionare la 64×64 px,
+* normalizare valori de intensitate,
+* transformare în tensor utilizabil de model.
 
-| Proprietate   | Detalii                 |
-| ------------- | ----------------------- |
-| **Tip**       | Numeric                 |
-| **Unitate**   | –                       |
-| **Descriere** | Intensitate (grayscale) |
-| **Valoare**   | 1                       |
+### **2.2 Modulul 2 – Modelul de Clasificare**
 
-### **Intensitate Pixel**
+* Model CNN antrenat anterior (fișierul `semnatura_model.h5`).
+* Importat și încărcat automat la pornirea aplicației.
 
-| Proprietate        | Detalii                |
-| ------------------ | ---------------------- |
-| **Tip**            | Numeric                |
-| **Descriere**      | Valoarea luminozității |
-| **Domeniu valori** | 0 (Negru) – 255 (Alb)  |
+### **2.3 Modulul 3 – Interfața Web (Flask)**
+
+Permite:
+
+* upload imagine,
+* rularea pipeline-ului de inferență,
+* afișarea rezultatului: Autentică / Falsă.
 
 ---
 
-## 2. Eticheta (Y)
+## **3. Caracteristicile și Structura Datelor**
 
-| Proprietate         | Detalii                  |
-| ------------------- | ------------------------ |
-| **Tip**             | Categorial               |
-| **Valori posibile** | 0 = falsă, 1 = autentică |
-| **Descriere**       | Clasa asociată imaginii  |
+### **3.1 Descriere generală**
+
+Sistemul funcționează pe baza unor imagini grayscale 64×64 px, utilizate ca intrare în modelul CNN.
+
+### **3.2 Tabelul caracteristicilor**
+
+```markdown
+| Caracteristică      | Tip        | Unitate | Descriere                          | Domeniu valori            |
+|---------------------|-----------|---------|------------------------------------|----------------------------|
+| Imagine (X)          | matrice   | pixeli  | Imaginea semnăturii procesate      | 64 × 64 px                 |
+| Canal culoare        | numeric   | -       | Canal grayscale                     | 1                          |
+| Intensitate pixeli   | numeric   | -       | Valoarea luminanței                 | 0 (negru) – 255 (alb)      |
+| Etichetă (Y)         | categorial| -       | Clasa semnăturii                    | {0: Falsă, 1: Autentică}   |
+```
 
 ---
 
-## 3. Modelul Utilizat (CNN)
-
-Arhitectura rețelei convoluționale:
+## **4. Structura Repository-ului la Finalul Etapei 5**
 
 ```text
-Input: 64x64x1 (grayscale)
-
-[Conv2D 32 filtre, kernel 3x3]  
-[ReLU]  
-[MaxPooling 2x2]
-
-[Conv2D 64 filtre, kernel 3x3]  
-[ReLU]  
-[MaxPooling 2x2]
-
-[Conv2D 128 filtre, kernel 3x3]  
-[ReLU]  
-[MaxPooling 2x2]
-
-[Flatten]
-
-[Dense 128 neuroni]  
-[ReLU]  
-[Dropout 0.5]
-
-Output: Dense (sigmoid, 1 neuron)
+SVAS-Project/
+│
+├── README.md                    # Overview general
+├── README_Etapa5.md             # ACESȚI FIȘIER
+│
+├── svas_web.py                  # Aplicația finală (Module 1, 2, 3 integrate)
+│
+├── semnatura_model.h5           # Modelul CNN antrenat
+│
+├── dataset/
+│   ├── Date autentice/          # 50 imagini
+│   └── Date false/              # 50 imagini
+│
+├── docs/
+│   └── screenshots/
+│       └── inference_real.png   # Screenshot cu predicția în browser
+│
+└── requirements.txt             # Dependințe Python
 ```
-
-Funcția de pierdere: **binary_crossentropy**
-Optimizer: **Adam**
-Metrici: **accuracy**
 
 ---
 
-## 4. Procedura de Antrenare
+## **5. Funcționarea Aplicației Web**
 
-### **Set de date**
+Aplicația este implementată în **Flask** și realizează:
 
-* 100 imagini totale
-
-  * 50 semnături autentice
-  * 50 semnături false
-
-### **Preprocesare**
-
-* Conversie în grayscale
-* Redimensionare la 64×64 px
-* Normalizare: `pixel / 255.0`
-* Shuffle + split automat în antrenare/validare
+1. **Încărcarea fișierului** prin formular HTML.
+2. **Validarea tipului de fișier.**
+3. **Preprocesarea imaginii** conform pipeline-ului stabilit.
+4. **Rularea predicției** utilizând modelul `semnatura_model.h5`.
+5. **Afișarea rezultatului** împreună cu imaginea încărcată.
 
 ---
 
-## 5. Rezultate inferență și capturi de ecran
+## **6. Rularea aplicației**
 
-Exemplu rezultat într-o predicție reală (cu aplicația Flask):
+### **6.1 Instalarea dependențelor**
 
-**Imagine Reală:**
-Se generează un scor al probabilității și se afișează:
-
-```
-Probabilitate autenticitate: 0.87
-Clasificare: Semnătură Autentică
+```bash
+pip install -r requirements.txt
 ```
 
-Screenshot-ul se află în:
+### **6.2 Pornirea aplicației**
+
+```bash
+python svas_web.py
+```
+
+Aplicația devine accesibilă pe:
+
+```
+http://127.0.0.1:5000/
+```
+
+---
+
+## **7. Exemplu de Inferență (Captură ecran)**
+
+Imaginea de mai jos este inclusă în repository:
 
 ```
 docs/screenshots/inference_real.png
 ```
 
----
-
-## 6. Codul complet al aplicației (svas_web.py)
-
-```python
-[ aici se inserează codul tău complet ]
-```
-
-(dacă vrei, pot să-l lipesc eu pentru tine)
+Aceasta demonstrează afișarea predicției în browser.
 
 ---
 
-## 7. Structura Repository-ului
+## **8. Concluzia Etapei 5**
 
-Aceasta este versiunea care se afișează corect pe GitHub:
+Această etapă marchează finalizarea proiectului prin:
 
-```text
-SVAS-Project/
-├── README.md                # Overview general
-├── README_Etapa5.md         # Acest fișier
-├── svas_web.py              # Aplicația completă (Modulele 1, 2, 3)
-├── semnatura_model.h5       # Modelul antrenat și salvat
-├── dataset/
-│   ├── Date autentice/      # 50 imagini autentice
-│   └── Date false/          # 50 imagini false
-├── docs/
-│   └── screenshots/
-│       └── inference_real.png   # Screenshot cu predicția
-└── requirements.txt
-```
+* integrarea tuturor modulelor,
+* dezvoltarea unei interfețe utilizabile,
+* rularea completă a fluxului input–preprocesare–predicție–afișare rezultat.
+
+Sistemul este acum complet funcțional și poate fi extins pentru dataset-uri mai mari, modele mai robuste sau UI îmbunătățită.
 
 ---
-
-Dacă vrei, pot să-ți:
-
-1. **Integrez codul complet în secțiunea 6**
-2. **Generez automat întreg README.md final**
-3. **Refac și Etapa 4 sau Etapa 6 dacă ai nevoie**
-
-Vrei să includ și codul complet în document?
