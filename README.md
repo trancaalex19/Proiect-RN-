@@ -1,176 +1,144 @@
-📘 README – Etapa 4
+📘 README – Etapa 5: Configurarea și Antrenarea Modelului RN
 
 Disciplina: Rețele Neuronale
-
 Instituție: POLITEHNICA București – FIIR
-
 Student: Tranca Alexandru-Constantin
+Grupa: 634 AB
+Link Repository GitHub: [Adaugă link-ul tău aici]
+Data predării: 11.12.2025
 
-Data: 04.12.2025
+Scopul Etapei 5
 
-Introducere
+Această etapă vizează antrenarea efectivă a modelului CNN definit anterior, evaluarea performanței acestuia pe setul de date colectat (semnături digitale) și integrarea modelului antrenat în aplicația web finală.
 
-Acest document descrie activitățile realizate în Etapa 3, în care se analizează și se preprocesează setul de date necesar proiectului „Sistem de Verificare a Autenticității Semnăturilor (SVAS)”. Scopul etapei este pregătirea corectă a datelor pentru instruirea modelului RN, respectând bunele practici privind calitatea, consistența și reproductibilitatea datelor.
+Pornire: Arhitectura completă din Etapa 4 (aplicația svas_web.py funcțională, dataset de 100 imagini originale).
 
-1. Structura Repository-ului Github (versiunea Etapei 3)
+PREREQUISITE – Verificare Etapa 4
+
+[x] State Machine definit și documentat în README-ul anterior.
+
+[x] Contribuție 100% date originale în dataset/ (50 Autentice / 50 False).
+
+[x] Modul 1 (Data Logging) funcțional - Captură canvas HTML5 -> PNG.
+
+[x] Modul 2 (RN) arhitectură CNN definită în Keras.
+
+[x] Modul 3 (Web Service) funcțional, permite desenarea și verificarea.
+
+1. Pregătire Date pentru Antrenare
+
+Deoarece întregul dataset a fost generat prin aplicația proprie ("First-party data"), preprocesarea este integrată în pipeline-ul de antrenare.
+
+Structura Dataset-ului Final:
+
+Total: 100 imagini (50 Autentic / 50 Fals).
+
+Split: 80% Train / 20% Validation (realizat automat de Keras prin validation_split=0.2).
+
+Preprocesare:
+
+Resize: 64x64 pixeli.
+
+Grayscale: 1 canal de culoare.
+
+Normalizare: Valori pixel [0, 1].
+
+2. Configurare și Hiperparametri (Nivel 1)
+
+Modelul a fost antrenat folosind următoarea configurație, optimizată pentru dimensiunea redusă a dataset-ului și resursele disponibile (CPU).
+
+Tabel Justificare Hiperparametri
+
+Hiperparametru
+
+Valoare Aleasă
+
+Justificare
+
+Learning rate
+
+0.001 (Default)
+
+Valoare standard pentru optimizatorul Adam; asigură o convergență rapidă fără oscilații majore.
+
+Batch size
+
+8
+
+Am ales o valoare mică (8) deoarece dataset-ul este mic (100 mostre). Un batch mic ajută la generalizare prin introducerea unui zgomot benefic în gradient.
+
+Number of epochs
+
+15
+
+Suficient pentru ca modelul să conveargă pe acest dataset simplu fără a intra în overfitting masiv.
+
+Optimizer
+
+Adam
+
+Cel mai versatil optimizator pentru CNN-uri; gestionează automat rata de învățare per parametru.
+
+Loss function
+
+Binary Crossentropy
+
+Problema este de clasificare binară (Autentic vs Fals), deci aceasta este funcția de cost matematic corectă.
+
+Activation functions
+
+ReLU (hidden), Sigmoid (output)
+
+ReLU pentru straturile de convoluție (viteza de calcul), Sigmoid la final pentru a obține o probabilitate între 0 și 1.
+
+Metrici obținute (estimat pe setul de validare):
+
+Acuratețe: ~92%
+
+Loss: ~0.25
+
+3. Analiză Erori în Context Industrial (Nivel 2)
+
+1. Pe ce clase greșește cel mai mult modelul?
+
+Modelul tinde să aibă o rată mai mare de False Negatives (respinge semnătura autentică).
+
+Cauză: Variabilitatea naturală a semnăturii studentului. Dacă studentul semnează mai repede sau mai încet cu mouse-ul, liniile pot fi mai tremurate, ceea ce modelul interpretează uneori ca fiind un fals.
+
+2. Ce caracteristici ale datelor cauzează erori?
+
+Dispozitivul de intrare: Semnăturile făcute cu Trackpad-ul laptopului sunt mult mai line decât cele făcute cu un Mouse vechi. Modelul antrenat preponderent cu mouse-ul poate respinge semnăturile "prea perfecte" de pe trackpad.
+
+Grosimea liniei: Dacă utilizatorul desenează prea mic în colțul canvasului, rezoluția de 64x64 pierde detalii esențiale.
+
+3. Ce implicații are pentru aplicația industrială?
+
+False Positive (Acceptă un fals): Risc de securitate (un student primește prezență fraudulos).
+
+False Negative (Respinge un autentic): Disconfort pentru utilizator (trebuie să semneze din nou).
+
+Prioritate: În contextul prezenței la curs, preferăm siguranța (evitarea fraudelor), deci un False Negative este acceptabil, dar un False Positive trebuie minimizat.
+
+4. Ce măsuri corective propuneți?
+
+Data Augmentation: Introducerea de rotații ușoare (+/- 10 grade) și zoom în timpul antrenării pentru a face modelul robust la poziționare.
+
+Creșterea Dataset-ului: Colectarea a încă 50 de semnături autentice folosind dispozitive diferite (telefon, tabletă).
+
+Threshold Dinamic: Ajustarea pragului de decizie de la 0.8 la 0.75 dacă rata de respingere a utilizatorilor legitimi este prea mare.
+
+4. Structura Repository-ului la Finalul Etapei 5
 
 SVAS-Project/
-├── README.md                # Documentația tehnică
+├── README.md                # Overview general
+├── README_Etapa5.md         # ACEST FIȘIER
+├── svas_web.py              # Aplicația completă (conține modulele 1, 2, 3)
+├── semnatura_model.h5       # Modelul ANTRENAT și salvat
+├── dataset/                 # Datele utilizate
+│   ├── Date autentice/      # 50 imagini
+│   └── Date false/          # 50 imagini
 ├── docs/
-│   └── datasets/            # Grafice și rapoarte distribuție
-├── data/
-│   ├── raw/                 # Date brute (imagini originale salvate din web app)
-│   ├── processed/           # Date curățate (transformate intern în memorie)
-│   ├── train/               # Set de instruire (gestionat automat)
-│   ├── validation/          # Set de validare (split 20%)
-│   └── test/                # Date de testare live
-├── dataset/                 # Dataset-ul fizic
-│   ├── Date autentice/      # 50 imagini originale (Clasa 1)
-│   └── Date false/          # 50 imagini falsificate (Clasa 0)
-├── src/
-│   ├── preprocessing/       # Pipeline de redimensionare/normalizare
-│   ├── data_acquisition/    # Modulul svas_web.py
-│   └── neural_network/      # Arhitectura CNN
-├── config/                  # Configurații (dimensiune 64x64)
-└── requirements.txt         # tensorflow, flask, pillow, numpy
-
-
-2. Descrierea Setului de Date
-
-2.1 Sursa datelor
-
-Origine: Date generate propriu (First-party data) prin aplicația svas_web.py.
-
-Modul de achiziție: ☑ Senzori reali (Mouse / Touchpad) / ☐ Simulare / ☐ Fișier extern / ☐ Generare programatică.
-
-Perioada / condițiile colectării: Noiembrie-Decembrie 2025. Colectare manuală prin desenare pe canvas digital HTML5.
-
-2.2 Caracteristicile dataset-ului
-
-Număr total de observații: 100 imagini.
-
-Număr de caracteristici (features): 4096 (pixeli per imagine 64x64).
-
-Tipuri de date: ☐ Numerice / ☐ Categoriale / ☐ Temporale / ☑ Imagini.
-
-Format fișiere: PNG (Single Channel - Grayscale).
-
-### 2.3 Descrierea fiecărei caracteristici
-
-| Caracteristică   | Tip       | Unitate | Descriere                     | Domeniu valori          |
-|-----------------|-----------|---------|-------------------------------|------------------------|
-| Imagine (X)      | matrice   | pixeli  | Imaginea semnăturii redimensionată | 64 x 64 px             |
-| Canal Culoare    | numeric   | -       | Intensitate (Grayscale)       | 1                      |
-| Intensitate Pixel| numeric   | -       | Valoarea luminozității        | 0 (Negru) – 255 (Alb) |
-| Etichetă (Y)     | categorial| -       | Clasa semnăturii             | {0: Fals, 1: Autentic} |
-
-
-3. Analiza Exploratorie a Datelor (EDA) – Sintetic
-
-3.1 Statistici descriptive aplicate
-
-Distribuția Claselor: Dataset-ul este perfect echilibrat:
-
-50 Semnături Autentice.
-
-50 Semnături False.
-
-Analiza Dimensiunilor: Toate imaginile sunt standardizate la 64x64 pixeli.
-
-3.2 Analiza calității datelor
-
-Detectarea valorilor lipsă: Nu există pixeli lipsă. Imaginile corupte (0 bytes) sunt ignorate automat.
-
-Consistență: Formatul PNG lossless asigură calitatea liniilor desenate.
-
-3.3 Probleme identificate
-
-Variabilitate: Semnăturile cu mouse-ul prezintă un "tremur" specific (zgomot de cuantizare) față de cele pe hârtie.
-
-Volum: Setul de 100 de date este mic, dar suficient pentru demonstrarea conceptului (Proof of Concept).
-
-4. Preprocesarea Datelor
-
-4.1 Curățarea datelor
-
-Eliminare duplicatelor: Verificare manuală a folderelor.
-
-Tratarea outlierilor: Eliminarea imaginilor complet albe (salvate eronat).
-
-4.2 Transformarea caracteristicilor
-
-Procesul este automatizat în codul Python:
-
-Conversie Grayscale: Transformare RGB -> L (1 canal).
-
-Redimensionare: Resize la 64x64 pixeli.
-
-Normalizare: Împărțirea valorilor pixelilor la 255.0 => interval [0.0, 1.0].
-
-4.3 Structurarea seturilor de date
-
-Împărțire realizată:
-
-80% – Train: Pentru învățarea ponderilor.
-
-20% – Validation: Pentru monitorizarea performanței.
-
-Principii respectate:
-
-Shuffle: Amestecare aleatorie înainte de antrenare.
-
-Stratificare: Asigurarea prezenței ambelor clase în validare.
-
-4.4 Salvarea rezultatelor preprocesării
-
-Datele nu sunt salvate intermediar pe disc, ci procesate "on-the-fly" în memoria RAM.
-
-Modelul Final: Salvat ca semnatura_model.h5.
-
-5. Diagrama Fluxului de Date
-
-Mai jos este prezentat fluxul complet al datelor prin sistemul SVAS:
-
-graph TD
-    A[Utilizator] -->|Desenează Semnătura| B(Interfață Web - HTML Canvas)
-    B -->|Apasă 'Verifică'| C{JavaScript}
-    C -->|Codificare Base64| D[HTTP POST Request]
-    D -->|Trimite datele| E[Server Python Flask]
-    
-    subgraph "Backend AI (Pre-procesare & Inferență)"
-    E -->|Decodare Imagine| F[Imagine Brută]
-    F -->|Resize 64x64 & Grayscale| G[Matrice 64x64x1]
-    G -->|Normalizare /255.0| H[Tensor Input (0.0 - 1.0)]
-    H -->|CNN Model| I[Rețea Neuronală]
-    I -->|Predicție| J[Scor Sigmoid (0.0 - 1.0)]
-    end
-    
-    J -->|Decizie (Prag > 0.8)| K[Verdict: AUTENTIC / FALS]
-    K -->|Răspuns JSON| C
-    C -->|Afișare Colorată| A
-
-
-6. Fișiere Generate în Această Etapă
-
-svas_web.py: Aplicația completă.
-
-dataset/: Imaginile colectate.
-
-semnatura_model.h5: Modelul antrenat.
-
-README.md: Documentația.
-
-7. Stare Etapă
-
-[x] Structură repository configurată.
-
-[x] Dataset analizat și echilibrat (50/50).
-
-[x] Date preprocesate (Pipeline automat implementat).
-
-[x] Seturi train/validation utilizate în antrenare.
-
-[x] Aplicație Web funcțională și model antrenat.
-
-[x] Documentație actualizată în README.
-fa mi l sa arate mai frumos
+│   └── screenshots/
+│       └── inference_real.png # Screenshot cu predicția în browser
+└── requirements.txt
+Fa mi asta in cat sa o adaug la readme
