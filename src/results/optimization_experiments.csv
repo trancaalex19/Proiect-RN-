@@ -1,0 +1,4 @@
+Experiment_ID,Learning_Rate,Train_Accuracy,Validation_Accuracy,Validation_Loss,Durata_Secunde,Epoci
+1,0.0001,0.9821,0.0,2.3064,109.14,25
+2,0.0005,0.9375,0.0,2.3239,122.2,25
+3,0.001,0.875,0.0,2.3363,131.02,25

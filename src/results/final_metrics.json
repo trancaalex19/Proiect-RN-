@@ -1,0 +1,15 @@
+{
+  "model": "semnatura_model.h5",
+  "test_accuracy": 0.825,
+  "test_f1_macro": 0.803,
+  "test_precision_macro": 0.805,
+  "test_recall_macro": 0.802,
+ "false_negative_rate": 0.032,
+  "false_positive_rate": 0.058,
+  "inference_latency_ms": 34,
+  "improvement_vs_baseline": {
+    "accuracy": "+12.71%",
+    "f1_score": "+11.20%",
+    "latency": "-15%"
+  }
+}

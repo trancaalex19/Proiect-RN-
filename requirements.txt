@@ -1,0 +1,22 @@
+# Framework-ul Web
+flask
+
+# Procesare Imagini (cv2)
+opencv-python
+
+# Inteligenta Artificiala & Deep Learning
+tensorflow
+numpy
+scikit-learn
+
+# Procesare PDF (import fitz)
+# Nota: Pachetul se numeste pymupdf, dar importul in cod este 'fitz'
+pymupdf
+
+#Grafic
+
+matplotlib
+
+#Experments
+
+pandas pandas matplotlib scikit-learn
